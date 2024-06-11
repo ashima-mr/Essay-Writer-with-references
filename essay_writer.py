@@ -11,8 +11,7 @@ import PyPDF2
 import re
 from bs4 import BeautifulSoup
 
-from google.colab import userdata
-OPENAI_API_KEY = userdata.get('OPENAI_API_KEY')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
 """# Google Scholar"""
 
