@@ -11,7 +11,7 @@ import PyPDF2
 import re
 from bs4 import BeautifulSoup
 
-OPENAI_API_KEY = st.secrets["openai"]["OPENAI_API_KEY"]
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 """# Google Scholar"""
 
