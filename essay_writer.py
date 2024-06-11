@@ -6,7 +6,7 @@ from scholarly import scholarly
 import arxiv
 from arxiv import Client, Search, SortCriterion
 import requests
-from io
+from io import BytesIO
 import PyPDF2
 import re
 from bs4 import BeautifulSoup
