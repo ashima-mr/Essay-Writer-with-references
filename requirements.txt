@@ -1,0 +1,6 @@
+openai
+scholarly
+arxiv
+beautifulsoup4
+requests
+PyPDF2
