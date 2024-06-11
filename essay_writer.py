@@ -161,11 +161,6 @@ def fetch_academic_references_pubmed(topic, num_results=5):
 
     return papers
 
-topic = "genes for PCOS detection"
-references_pubmed = fetch_academic_references_pubmed(topic)
-for ref in references_pubmed:
-    print(ref)
-
 def fetch_text_from_url(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
