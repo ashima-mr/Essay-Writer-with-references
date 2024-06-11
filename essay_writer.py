@@ -129,13 +129,6 @@ def fetch_pdf_link_semanticscholar(paper_url):
         print("Failed to fetch the paper URL:", paper_url)
         return None
 
-paper_url = "https://www.semanticscholar.org/paper/PCOcare%3A-PCOS-Detection-and-Prediction-using-Thakre/92daa9106f811ae583d1bbc464b0fe70c3f71fc4?utm_source=direct_link"
-pdf_link = fetch_pdf_link_semanticscholar(paper_url)
-if pdf_link:
-    print("PDF link:", pdf_link)
-else:
-    print("PDF link not found.")
-
 """# PubMed"""
 
 def fetch_academic_references_pubmed(topic, num_results=5):
