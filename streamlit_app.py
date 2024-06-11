@@ -9,7 +9,7 @@ def main():
 
     if st.button("Generate Essay"):
         st.write("Generating essay...")
-        essay, references = generate_essay_and_references(topic, journal)
+        '''essay, references = generate_essay_and_references(topic, journal)'''
 
         if essay:
             st.subheader("Essay:")
