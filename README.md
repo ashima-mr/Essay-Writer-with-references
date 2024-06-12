@@ -1,2 +1,2 @@
 # Essay-Writer-with-references
-An AI-based essay writer that writes essays based on prompt using appropriate references and quoting utilized references appropriately.
+An GPT-based essay writer that writes essays based on an user-input topic prompt using appropriate references from PubMed and ArXiv and quoting utilized references per user preference in MLA and APA reference styles.
