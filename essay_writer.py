@@ -82,7 +82,7 @@ def download_and_extract_text(pdf_url):
 
 """# Semantic Scholar"""
 
-def fetch_academic_references_semanticscholar(topic, num_results=5):
+'''def fetch_academic_references_semanticscholar(topic, num_results=5):
     base_url = "https://api.semanticscholar.org/graph/v1/paper/search"
     params = {
         "query": topic,
@@ -127,7 +127,7 @@ def fetch_pdf_link_semanticscholar(paper_url):
         return pdf_link
     else:
         print("Failed to fetch the paper URL:", paper_url)
-        return None
+        return None'''
 
 """# PubMed"""
 
