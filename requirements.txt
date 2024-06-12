@@ -4,3 +4,4 @@ arxiv
 beautifulsoup4
 requests
 PyPDF2
+streamlit
