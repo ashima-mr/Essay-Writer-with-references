@@ -6,10 +6,11 @@ def main():
     
     topic = st.text_input("Enter the topic:")
     journal = st.selectbox("Select the journal:", ["PubMed", "ArXiv"])
+    reference_style = st.selectbox("Select the reference style:", ["MLA", "APA"])
 
     if st.button("Generate Essay"):
         st.write("Generating essay...")
-        '''essay, references = generate_essay_and_references(topic, journal)'''
+        essay, references = generate_essay_and_references(topic, journal, reference_style)
 
         if essay:
             st.subheader("Essay:")

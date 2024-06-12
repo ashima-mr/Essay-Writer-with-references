@@ -6,12 +6,13 @@ from scholarly import scholarly
 import arxiv
 from arxiv import Client, Search, SortCriterion
 import requests
+import io
 from io import BytesIO
 import PyPDF2
 import re
 from bs4 import BeautifulSoup
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 """# Google Scholar"""
 
@@ -197,13 +198,18 @@ def summarize_texts(extracted_texts, max_length=2000):
     return summarized_texts
 
 def generate_essay_with_sources(summarized_texts, topic, max_length=3000):
-    prompt = f'''Using the following summarized information, write an essay in 1000 words on {topic}, incorporating the provided summarized information:\n\n{summarized_texts}\n\n
-            In your essay, address the following aspects with appropriate headdings if necessary:\n\n
-            1.Introduction: Introduce the topic and provide background information.\n\n
-            2.Main Body: Organize your discussion around the key points extracted from the summaries. Elaborate on each point, providing relevant details, examples, and arguments.\n\n
-            3.Analysis: Critically examine the implications of the summarized information. Consider any potential limitations, controversies, or areas for further investigation.\n\n
-            4.Conclusion: Summarize your main findings and arguments, highlighting the significance of the topic and suggesting potential avenues for future research.\n\n
-            Ensure your essay is well-structured, coherent, and academically sound. '''
+    prompt = f"""Write an essay of 1500 words on the topic of {topic}, incorporating the provided summarized information:\n\n{summarized_texts}\n\n
+            The essay should be cohesive, naturally flowing, and should reference the papers in a comprehensive and comparative manner where appropriate. Do not treat each summary as a separate section, but instead weave the information together to create a unified narrative. In your essay, address the following aspects, but feel free to use appropriate headings and subheadings as necessary. The structure below is a mere suggestion:
+
+            1. Introduction: Introduce the topic and provide background information.
+            
+            2. Main Body: Organize your discussion around the key points extracted from the summaries. Elaborate on each point, providing relevant details, examples, and arguments.
+
+            3. Analysis: Critically examine the implications of the summarized information. Consider any potential limitations, controversies, or areas for further investigation.
+
+            4. Conclusion: Summarize your main findings and arguments, highlighting the significance of the topic and suggesting potential avenues for future research.
+
+            Ensure your essay is well-structured, coherent, and academically sound, with smooth transitions between sections and a natural flow of ideas."""
     for text in summarized_texts:
         prompt += text + "\n\n"
 
@@ -278,25 +284,108 @@ def extract_essay(response):
     essay_content = first_choice.message.content
     return essay_content
 
-def generate_essay_and_references(topic, journal):
-    if journal == "PUBMED":
-        essay, references = create_essay_with_academic_references_pubmed(topic)
-    elif journal == "ARXIV":
-        essay, references = create_essay_with_academic_references_arxiv(topic)
+'''def generate_mla_references(topic: str, papers: list[dict]) -> list[str]:
+    print(papers)
+    references = []
+    for paper in papers:
+        author_names = ", ".join(author['name'] for author in paper.get('authors', []))
+        title = paper.get('title', '')
+        year = paper.get('year', '')
+        url = paper.get('url', '')
+
+        reference = f"{author_names}. \"{title}.\" {year}, {url}."
+        references.append(reference)
+
+    return references '''
+
+def generate_mla_references(topic: str, papers: list[dict]) -> list[str]:
+    references = []
+    for paper in papers:
+        try:
+            author_names = ", ".join([author['name'] for author in paper.get('authors', [])])
+            title = paper.get('title', '')
+            year = paper.get('year', '')
+            url = paper.get('url', '')
+
+            reference = f"{author_names}. \"{title}.\" {year}, {url}."
+            references.append(reference)
+        except KeyError as ke:
+            print(f"Missing key '{ke.args[0]}' in one of the papers.")
+        except TypeError as te:
+            print(f"Unexpected type error: {te}")
+
+    return references
+
+
+'''import json
+
+def generate_mla_references(topic: str, papers: list[str]) -> list[str]:
+    references = []
+    for paper_json_str in papers:
+        # Parse the JSON string into a dictionary
+        try:
+            paper = json.loads(paper_json_str)
+        except json.JSONDecodeError:
+            print(f"Failed to decode JSON for paper: {paper_json_str}")
+            continue  # Skip this paper if JSON decoding fails
+
+        author_names = ", ".join(author['name'] for author in paper.get('authors', []))
+        title = paper.get('title', '')
+        year = paper.get('year', '')
+        url = paper.get('url', '')
+
+        reference = f"{author_names}. \"{title}.\" {year}, {url}."
+        references.append(reference)
+
+    return references'''
+
+def generate_apa_references(topic: str, papers: list[dict]) -> list[str]:
+    references = []
+    for paper in papers:
+        author_names = ", ".join(author['name'] for author in paper.get('authors', []))
+        title = paper.get('title', '')
+        year = paper.get('year', '')
+        url = paper.get('url', '')
+
+        reference = f"{author_names} ({year}). {title}. Retrieved from {url}"
+        references.append(reference)
+
+    return references
+
+def generate_essay_and_references(topic: str, journal: str, reference_style: str) -> tuple[str, list[str]]:
+    if journal == "Pubmed":
+        essay, papers = create_essay_with_academic_references_pubmed(topic)
+    elif journal == "Arxiv":
+        essay, papers = create_essay_with_academic_references_arxiv(topic)
     else:
         print("Invalid journal. Please choose 'PubMed' or 'ArXiv'.")
-        return None, None
-
+        return None, []
+    
     if essay:
         print("Essay:")
         print(essay)
-    else:
+    if not essay:
         print("No essay generated due to errors in fetching or processing papers.")
+        return None, []
+
+    references = []
+
+    if reference_style == "MLA":
+        references = generate_mla_references(topic, papers)
+    elif reference_style == "APA":
+        references = generate_apa_references(topic, papers)
+    else:
+        print("Invalid reference style. Please choose 'MLA' or 'APA'.")
+        return None, []
 
     print("\nReferences:")
     for ref in references:
         print(ref)
 
+    return essay, references
+
 topic = input("Enter the topic: ")
 journal = input("Enter the journal (PubMed or ArXiv): ").capitalize()
-generate_essay_and_references(topic, journal)
+reference_style = input("Enter the reference style (MLA or APA): ").upper()
+essay, references = generate_essay_and_references(topic, journal, reference_style)
+
