@@ -1,5 +1,5 @@
 import streamlit as st
-from essay_writer import generate_essay_with_sources  
+from essay_writer import generate_essay_and_references  
 
 def main():
     st.title("Academic Essay Generator")
